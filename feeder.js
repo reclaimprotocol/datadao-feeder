@@ -7,7 +7,6 @@ require("dotenv").config();
 
 // Setting up configurations
 const network = process.env.NETWORK;
-// const apiUrl = process.argv['api-url'] ? process.argv['api-url'] : process.argv[3];
 const apiUrl = process.env.API_URL;
 const appSecret = process.env.APP_SECRET;
 const { rpcEndpoint, contractAddress, explorerLink } = CONFIG.networks[network];
@@ -35,29 +34,6 @@ const fetchProof = async (url) => {
   };
   return await reclaimClient.zkFetch(url, options);
 };
-
-// const transformForOnchain = (proof) => {
-//   console.log(proof);
-//   const claimInfoBuilder = new Map([
-//     ["context", proof.claim.context],
-//     ["parameters", proof.claim.parameters],
-//     ["provider", proof.claim.provider],
-//   ]);
-//   const claimInfo = Object.fromEntries(claimInfoBuilder);
-//   const claimBuilder = new Map([
-//     ["epoch", proof.claim.epoch],
-//     ["identifier", proof.claim.identifier],
-//     ["owner", proof.claim.owner],
-//     ["timestampS", proof.claim.timestampS],
-//   ]);
-//   const signedClaim = {
-//     claim: Object.fromEntries(claimBuilder),
-//     signatures: [
-//       "0x" + Buffer.from(proof.signatures.claimSignature).toString("hex"),
-//     ],
-//   };
-//   return { claimInfo, signedClaim };
-// };
 
 const transformVerifiedResponse = (claim) => {
   return JSON.parse(
