@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# Colors for output
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
-
 # Parse command line arguments
 while getopts ":s:n:u:i:" opt; do
   case $opt in
@@ -16,10 +11,10 @@ while getopts ":s:n:u:i:" opt; do
     ;;
     i) FEED_INTERVAL="$OPTARG"
     ;;
-    \?) echo -e "${RED}Invalid option -$OPTARG${NC}" >&2
+    \?) echo "Invalid option -$OPTARG" >&2
         exit 1
     ;;
-    :) echo -e "${RED}Option -$OPTARG requires an argument.${NC}" >&2
+    :) echo "Option -$OPTARG requires an argument." >&2
         exit 1
     ;;
   esac
@@ -27,16 +22,36 @@ done
 
 # Validate required parameters
 if [ -z "$APP_SECRET" ] || [ -z "$NETWORK" ] || [ -z "$API_URL" ] || [ -z "$FEED_INTERVAL" ]; then
-    echo -e "${RED}Usage: $0 -s APP_SECRET -n NETWORK -u API_URL -i FEED_INTERVAL${NC}"
+    echo "Usage: $0 -s APP_SECRET -n NETWORK -u API_URL -i FEED_INTERVAL"
     echo "Example:"
-    echo "$0 -s 0xa5a3cdc0b4e14be68ed0c0de775d015c311fb258148d2da60e26da63dff06e22 \\"
+    echo "$0 -s 0xa5a3cdc0b4e14be68ed0c0de775d015c311fb25813332da60e26da63dff06e22 \\"
     echo "   -n arbitrum-mainnet \\"
     echo '   -u "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDC" \\'
     echo "   -i 3600"
     exit 1
 fi
 
-echo -e "${GREEN}Starting DataDAO Feeder Setup...${NC}\n"
+echo "Starting DataDAO Feeder Setup...\n"
+
+# Detect OS
+OS="$(uname -s)"
+case "${OS}" in
+    Linux*)     
+        OS='Linux'
+        ;;
+    Darwin*)    
+        OS='Mac'
+        ;;
+    MINGW*|CYGWIN*|MSYS*)    
+        OS='Windows'
+        ;;
+    *)          
+        echo "Unsupported operating system: ${OS}"
+        exit 1
+        ;;
+esac
+
+echo "Detected OS: ${OS}"
 
 # Function to check if a command exists
 command_exists() {
@@ -45,24 +60,46 @@ command_exists() {
 
 # Install git if not present
 if ! command_exists git; then
-    echo -e "${GREEN}Installing git...${NC}"
-    sudo apt-get update
-    sudo apt-get install -y git
+    echo "Installing git..."
+    case "${OS}" in
+        Linux)
+            sudo apt-get update
+            sudo apt-get install -y git
+            ;;
+        Mac)
+            brew install git
+            ;;
+        Windows)
+            echo "Please install Git manually from https://git-scm.com/download/win"
+            exit 1
+            ;;
+    esac
     
     if ! command_exists git; then
-        echo -e "${RED}Failed to install git. Please install manually.${NC}"
+        echo "Failed to install git. Please install manually."
         exit 1
     fi
 fi
 
 # Install Node.js and npm if not present
 if ! command_exists node; then
-    echo -e "${GREEN}Installing Node.js and npm...${NC}"
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-    sudo apt-get install -y nodejs
+    echo "Installing Node.js and npm..."
+    case "${OS}" in
+        Linux)
+            curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+            ;;
+        Mac)
+            brew install node@18
+            ;;
+        Windows)
+            echo "Please install Node.js manually from https://nodejs.org/"
+            exit 1
+            ;;
+    esac
     
     if ! command_exists node; then
-        echo -e "${RED}Failed to install Node.js. Please install manually.${NC}"
+        echo "Failed to install Node.js. Please install manually."
         exit 1
     fi
 fi
@@ -73,11 +110,11 @@ mkdir -p $PROJECT_DIR
 cd $PROJECT_DIR
 
 # Clone the repository
-echo -e "${GREEN}Cloning the repository...${NC}"
+echo "Cloning the repository..."
 git clone https://github.com/reclaimprotocol/datadao-feeder.git .
 
 # Create .env file with provided parameters
-echo -e "${GREEN}Creating .env file...${NC}"
+echo "Creating .env file..."
 cat > .env << EOL
 APP_SECRET=$APP_SECRET
 NETWORK=$NETWORK
@@ -87,12 +124,12 @@ EOL
 
 # Install dependencies only if node_modules doesn't exist
 if [ ! -d "node_modules" ]; then
-    echo -e "${GREEN}Installing dependencies...${NC}"
+    echo "Installing dependencies..."
     npm install
 else
-    echo -e "${GREEN}Node modules already installed, skipping npm install...${NC}"
+    echo "Node modules already installed, skipping npm install..."
 fi
 
 # Start the feeder
-echo -e "${GREEN}Starting the feeder...${NC}"
+echo "Starting the feeder..."
 node feeder.js 
