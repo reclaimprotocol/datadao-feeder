@@ -1,0 +1,18 @@
+{
+  "name": "data-feed-dao-feeder",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --no-warnings index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@reclaimprotocol/js-sdk": "^2.1.1",
+    "@reclaimprotocol/zk-fetch": "^0.2.1",
+    "dotenv": "^16.4.5",
+    "fs": "^0.0.1-security",
+    "node-cron": "^3.0.3"
+  }
+}

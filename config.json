@@ -1,0 +1,20 @@
+{
+    "networks": {
+        "arbitrum-mainnet": {
+            "name": "Arbitrum Mainnet",
+            "chainId": "42161",
+            "rpcEndpoint": "https://arbitrum-one.publicnode.com",
+            "explorerLink": "https://arbiscan.io/",
+            "contractAddress": "0xC29673d9a8b0Fba737E308309Fc7cb1d2f4457fC",
+            "icon": "arbitrum.svg"
+        },
+        "base-mainnet": {
+            "name": "Base Mainnet",
+            "chainId": "8453",
+            "rpcEndpoint": "https://base-rpc.publicnode.com",
+            "explorerLink": "https://basescan.org/",
+            "contractAddress": "0x5d5E4347b81FAe63d14F8F15Db74B49094B5341e",
+            "icon": "base.svg"
+        }
+    }
+}
